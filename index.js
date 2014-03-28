@@ -115,8 +115,17 @@ module.exports = function(options) {
 					}.bind(this, section[3]));
 				else
 					process(section[4], getFiles(section[5], cssReg), section[1], function(name, file) {
+						// Ulgy hack in order to support media and id attribute on our stylesheets
+						var cssExtraAttrReg = /(?:media|id)=['"][^"']*['"]/g;
+						var extraAttr = [];
+						var match;
+						while((match = cssExtraAttrReg.exec(section[5])) !== null) {
+							extraAttr.push(match[0]);
+						}
+						var extraAttrStr = extraAttr.join(' ');
+
 						push(file);
-						html.push('<link rel="stylesheet" href="' + name.replace(path.basename(name), path.basename(file.path)) + '"/>');
+						html.push('<link rel="stylesheet" href="' + name.replace(path.basename(name), path.basename(file.path)) + '" ' + extraAttrStr +'/>');
 					}.bind(this, section[3]));
 			}
 			else
